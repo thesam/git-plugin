@@ -587,6 +587,30 @@ public class GitSCMTest extends AbstractGitTestCase {
         DumbSlave s = createOnlineSlave();
         assertEquals(p.toString(), s.getChannel().call(new BuildChooserContextTestCallable(c)));
     }
+	
+    public void testMergeBeforeBuild() throws Exception {
+        String mergeTarget = "branch";
+		String branchToBuild = "master";
+		FreeStyleProject project = setupMergeProject(branchToBuild, mergeTarget);
+
+        final String commitFile1 = "commitFile1";
+        commit(commitFile1, johnDoe, "Commit number 1");
+        
+        git.branch(mergeTarget);
+        git.checkout(mergeTarget);
+        
+        //.. and commit to it:
+        final String commitFile2 = "commitFile2";
+        commit(commitFile2, johnDoe, "Commit number 2");
+        
+        git.checkout(branchToBuild);
+        final String commitFile3 = "commitFile3";
+        commit(commitFile3, johnDoe, "Commit number 3");
+        
+        build(project, Result.SUCCESS, commitFile1, commitFile2, commitFile3);
+    
+    }
+	
 
     private static class BuildChooserContextTestCallable implements Callable<String,IOException> {
         private final BuildChooserContext c;
@@ -673,7 +697,7 @@ public class GitSCMTest extends AbstractGitTestCase {
                                           String excludedRegions,
                                           String excludedUsers,
                                           String includedRegions) throws Exception {
-        return setupProject(branchString, authorOrCommitter, relativeTargetDir, excludedRegions, excludedUsers, null, false, includedRegions);
+        return setupProject(branchString, authorOrCommitter, relativeTargetDir, excludedRegions, excludedUsers, null, false, includedRegions,null);
     }
 
     private FreeStyleProject setupProject(String branchString, boolean authorOrCommitter,
@@ -682,19 +706,23 @@ public class GitSCMTest extends AbstractGitTestCase {
             String excludedUsers,
             boolean fastRemotePoll,
             String includedRegions) throws Exception {
-        return setupProject(branchString, authorOrCommitter, relativeTargetDir, excludedRegions, excludedUsers, null, fastRemotePoll, includedRegions);
+        return setupProject(branchString, authorOrCommitter, relativeTargetDir, excludedRegions, excludedUsers, null, fastRemotePoll, includedRegions,null);
+    }
+    
+    private FreeStyleProject setupMergeProject(String branchString, String mergeTarget) throws Exception {
+    	return setupProject(branchString,false,null,null,null,null,false,null,mergeTarget);
     }
 
     private FreeStyleProject setupProject(String branchString, boolean authorOrCommitter,
                                           String relativeTargetDir, String excludedRegions,
                                           String excludedUsers, String localBranch, boolean fastRemotePoll,
-                                          String includedRegions) throws Exception {
+                                          String includedRegions, String mergeTarget) throws Exception {
         FreeStyleProject project = createFreeStyleProject();
         project.setScm(new GitSCM(
                 null,
                 createRemoteRepositories(relativeTargetDir),
                 Collections.singletonList(new BranchSpec(branchString)),
-                null,
+                new UserMergeOptions("", mergeTarget),
                 false, Collections.<SubmoduleConfig>emptyList(), false,
                 false, new DefaultBuildChooser(), null, null, authorOrCommitter, relativeTargetDir, null,
                 excludedRegions, excludedUsers, localBranch, false, false, false, fastRemotePoll, null, null, false,
