@@ -1424,6 +1424,15 @@ public class GitSCM extends SCM implements Serializable {
         return scmName;
     }
     
+    public List<String> getRemoteBranches() {
+    	List<RemoteConfig> repositories = getRepositories();
+    	List<String> branches = new ArrayList<String>();
+    	for (RemoteConfig remoteConfig : repositories) {
+			branches.add(remoteConfig.toString());
+		}
+    	return branches;
+    }
+    
     @Extension
     public static final class DescriptorImpl extends SCMDescriptor<GitSCM> {
 
@@ -1453,7 +1462,7 @@ public class GitSCM extends SCM implements Serializable {
             GitTool[] gitToolInstallations = Hudson.getInstance().getDescriptorByType(GitTool.DescriptorImpl.class).getInstallations();
             return Arrays.asList(gitToolInstallations);
         }
-
+        
         /**
          * Path to git executable.
          * @deprecated

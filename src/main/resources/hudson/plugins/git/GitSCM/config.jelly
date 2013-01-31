@@ -49,9 +49,16 @@
   <f:entry title="Branches to build" help="/plugin/git/branch.html">
   <f:repeatable var="branch" name="branches" varStatus="branchStatus" items="${instance.branches}" minimum="1" noAddButton="false">
            <table width="100%">
+           <f:radio name="foo"/>
                <f:entry title="Branch Specifier (blank for default):" field="name">
                     <f:textbox value="${branch.name}" />
                </f:entry>
+           <f:radio name="foo2"/>    
+        	<f:entry title="Branch" field="name2">
+          		<select id="remoteBranches"/>
+                	<option>No branches found</option>
+      			</select>
+  			</f:entry>
 
                <f:entry>
             <div align="right">
