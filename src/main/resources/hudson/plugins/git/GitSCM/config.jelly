@@ -55,7 +55,7 @@
                </f:entry>
            <f:radio name="foo2"/>    
         	<f:entry title="Branch" field="name2">
-          		<select id="remoteBranches"/>
+          		<select id="remoteBranches" onclick="updateListBox('remoteBranches','descriptorByName/GitSCM/optionValues?value='+encode(this.value))">
                 	<option>No branches found</option>
       			</select>
   			</f:entry>

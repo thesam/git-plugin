@@ -1,7 +1,6 @@
 package hudson.plugins.git;
 
 import static hudson.Util.fixEmptyAndTrim;
-
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -39,6 +38,7 @@ import hudson.scm.SCMRevisionState;
 import hudson.triggers.SCMTrigger;
 import hudson.util.FormValidation;
 import hudson.util.IOUtils;
+import hudson.util.ListBoxModel;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +56,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
 import javax.servlet.ServletException;
 
 import org.eclipse.jgit.lib.Config;
@@ -1671,6 +1672,12 @@ public class GitSCM extends SCM implements Serializable {
                         return FormValidation.ok();
 
             return FormValidation.error("No remote repository configured with name '" + mergeRemoteName + "'");
+        }
+        
+        public ListBoxModel doOptionValues(@QueryParameter("value") String value) {
+        	ListBoxModel listBoxModel = new ListBoxModel();
+        	listBoxModel.add("hej");
+			return listBoxModel;
         }
 
         @Override

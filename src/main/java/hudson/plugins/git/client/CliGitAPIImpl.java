@@ -1032,4 +1032,13 @@ public class CliGitAPIImpl implements IGitAPI {
         String result = launchCommand(args);
         return result.length()>=40 ? ObjectId.fromString(result.substring(0, 40)) : null;
     }
+    
+    public List<String> getRemoteHeads(String remoteRepoUrl) {
+    	ArgumentListBuilder args = new ArgumentListBuilder("ls-remote");
+    	args.add("-h");
+    	args.add(remoteRepoUrl);
+    	String result = launchCommand(args);
+    	String[] lines = result.split("\n");
+    	return Arrays.asList(lines);
+    }
 }
