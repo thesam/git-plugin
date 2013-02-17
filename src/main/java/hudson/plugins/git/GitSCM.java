@@ -59,6 +59,8 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 
+import jenkins.model.Jenkins;
+
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.transport.RefSpec;
@@ -1676,7 +1678,24 @@ public class GitSCM extends SCM implements Serializable {
         
         public ListBoxModel doOptionValues(@QueryParameter("value") String value) {
         	ListBoxModel listBoxModel = new ListBoxModel();
-        	listBoxModel.add("hej");
+			try {
+	            // get git executable on master
+	            final EnvVars environment = new EnvVars(System.getenv()); // GitUtils.getPollEnvironment(project, null, launcher, TaskListener.NULL, false);
+	            GitTool.DescriptorImpl descriptor = Jenkins.getInstance().getDescriptorByType(GitTool.DescriptorImpl.class);
+	            String gitExe;
+				gitExe = descriptor.getInstallations()[0].forNode(Jenkins.getInstance(), TaskListener.NULL).getGitExe();
+				CliGitAPIImpl git = new CliGitAPIImpl(gitExe, null, TaskListener.NULL, environment, null);
+				List<String> remoteHeads = git.getRemoteHeads("https://github.com/thesam/myfirstrep.git");
+				for (String string : remoteHeads) {
+					listBoxModel.add(string);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return listBoxModel;
         }
 
